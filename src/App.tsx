@@ -45,6 +45,9 @@ import { AchievementsPanel } from "./components/achievements/AchievementsPanel";
 import { PomodoroTimer } from "./components/pomodoro/PomodoroTimer";
 import { HistoryChart } from "./components/history/HistoryChart";
 import { BackupModal } from "./components/settings/BackupModal";
+import { AccountPanel } from "./components/auth/AccountPanel";
+import { PrivacyScreen } from "./components/auth/PrivacyScreen";
+import { LocalModeBanner } from "./components/layout/LocalModeBanner";
 import type { AcademicConfig, GradesRecord, Subject } from "./types/academic";
 import { cn } from "./utils/cn";
 
@@ -84,8 +87,8 @@ export default function App() {
     setSubjectsFromExternal,
   } = useSubjects();
 
-  const { user, authError, isCloudEnabled, signIn, signUp, signOut } = useAuth();
-  const { syncStatus, lastSyncedAt, syncError, downloadSubjects, uploadSubjects, resetSync } =
+  const { user, authError, isCloudEnabled, signIn, signUp, signOut, resetPassword, updateName, deleteAccount } = useAuth();
+  const { syncStatus, lastSyncedAt, syncError, conflictNotice, downloadSubjects, uploadSubjects, resetSync } =
     useCloudSync(user?.id ?? null);
   const { isDark, toggleTheme } = useTheme();
   const { style: notebookStyle, setSheet, setHighlighter, setInk } = useNotebookStyle();
@@ -109,6 +112,9 @@ export default function App() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [bannerDismissed, setBannerDismissed] = useLocalStorage<boolean>("notaminima::banner-dismissed", false);
   const [mainTab, setMainTab] = useState<MainTab>("calculator");
   const [tabKey, setTabKey] = useState(0);
 
@@ -140,6 +146,10 @@ export default function App() {
   useEffect(() => {
     if (syncError) notify(syncError, "error");
   }, [syncError, notify]);
+
+  useEffect(() => {
+    if (conflictNotice) notify(conflictNotice, "info");
+  }, [conflictNotice, notify]);
 
   useEffect(() => {
     if (newlyUnlocked.length > 0) {
@@ -245,6 +255,16 @@ export default function App() {
     resetSync();
     notify("Sesión cerrada. Tus datos siguen en este dispositivo.", "info");
   }, [signOut, resetSync, notify]);
+
+  const handleDeleteAccount = useCallback(async () => {
+    const ok = await deleteAccount();
+    if (ok) {
+      resetSync();
+      setHasEntered(false);
+      notify("Tu cuenta y tus datos fueron eliminados.", "info");
+    }
+    return ok;
+  }, [deleteAccount, resetSync, notify, setHasEntered]);
 
   const handleImportBackup = useCallback(
     (importedSubjects: Subject[]) => {
@@ -382,6 +402,13 @@ export default function App() {
 
         {/* Contenido principal */}
         <section className="min-w-0 flex-1 space-y-4">
+          {/* Banner modo local en móvil (arriba del contenido) */}
+          {!user && !bannerDismissed ? (
+            <LocalModeBanner
+              onLogin={() => setIsAuthModalOpen(true)}
+              onDismiss={() => setBannerDismissed(true)}
+            />
+          ) : null}
           {/* Pestañas */}
           <nav
             className={cn(
@@ -532,6 +559,22 @@ export default function App() {
           >
             Respaldar datos
           </button>
+          {user ? (
+            <button
+              type="button"
+              onClick={() => setIsAccountOpen(true)}
+              className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+            >
+              Mi cuenta
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => setIsPrivacyOpen(true)}
+            className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+          >
+            Privacidad
+          </button>
         </div>
       </footer>
 
@@ -549,6 +592,20 @@ export default function App() {
         subjects={subjects}
         onImport={handleImportBackup}
       />
+
+      {user && isAccountOpen ? (
+        <AccountPanel
+          user={user}
+          onRename={updateName}
+          onResetPassword={resetPassword}
+          onDeleteAccount={handleDeleteAccount}
+          onClose={() => setIsAccountOpen(false)}
+        />
+      ) : null}
+
+      {isPrivacyOpen ? (
+        <PrivacyScreen onClose={() => setIsPrivacyOpen(false)} />
+      ) : null}
 
       <ToastViewport toasts={toasts} onDismiss={dismiss} />
     </div>

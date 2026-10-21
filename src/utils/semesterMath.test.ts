@@ -22,7 +22,6 @@ function makeSubject(name: string, grades: [number | null, number | null, number
 }
 
 const sem2026_1: Semester = { id: "s1", name: "2026-1", isArchived: false, createdAt: 0 };
-const sem2026_2: Semester = { id: "s2", name: "2026-2", isArchived: false, createdAt: 0 };
 const semArchived: Semester = { id: "s3", name: "2025-2", isArchived: true, createdAt: 0 };
 
 describe("getCredits", () => {

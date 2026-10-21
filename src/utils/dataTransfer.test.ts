@@ -80,7 +80,8 @@ describe("parseBackup", () => {
   it("rejects subject with invalid config", () => {
     const subjects = makeTestSubjects();
     const backup = createBackup(subjects);
-    (backup.subjects[0].config as unknown).maxGrade = "not a number";
+    const configHack = backup.subjects[0].config as unknown as Record<string, unknown>;
+    configHack.maxGrade = "not a number";
     const result = parseBackup(JSON.stringify(backup));
     expect(result.valid).toBe(false);
   });

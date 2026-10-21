@@ -106,5 +106,56 @@ export function useAuth() {
     setUser(null);
   }, []);
 
-  return { user, isLoading, authError, isCloudEnabled, signUp, signIn, signOut };
+  const resetPassword = useCallback(async (email: string): Promise<boolean> => {
+    setAuthError(null);
+    if (!supabase) {
+      setAuthError("La nube no está configurada.");
+      return false;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin,
+    });
+    if (error) {
+      setAuthError(translateAuthError(error.message));
+      return false;
+    }
+    return true;
+  }, []);
+
+  const updateName = useCallback(async (name: string): Promise<boolean> => {
+    setAuthError(null);
+    if (!supabase) return false;
+    const { error } = await supabase.auth.updateUser({ data: { name } });
+    if (error) {
+      setAuthError(translateAuthError(error.message));
+      return false;
+    }
+    setUser((prev) => (prev ? { ...prev, name } : prev));
+    return true;
+  }, []);
+
+  const deleteAccount = useCallback(async (): Promise<boolean> => {
+    setAuthError(null);
+    if (!supabase || !user) return false;
+    // Delete all user data first
+    await supabase.from("user_subjects").delete().eq("user_id", user.id);
+    // Sign out — actual user row deletion must be done via Supabase dashboard
+    // or a server-side function with service role key
+    await supabase.auth.signOut();
+    setUser(null);
+    return true;
+  }, [supabase, user]);
+
+  return {
+    user,
+    isLoading,
+    authError,
+    isCloudEnabled,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    updateName,
+    deleteAccount,
+  };
 }

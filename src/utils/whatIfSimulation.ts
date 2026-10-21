@@ -9,6 +9,7 @@
 
 import type {
   AcademicConfig,
+  CutId,
   GradesRecord,
   ScenarioPreset,
   WhatIfResult,
@@ -125,7 +126,7 @@ export function gradeNeededInCut(
 ): number | null {
   const cut = config.cuts.find((c) => c.id === cutId);
   if (!cut) return null;
-  if (grades[cutId] !== null) return null;
+  if (grades[cutId as CutId] !== null) return null;
 
   const knownContribution = config.cuts
     .filter((c) => grades[c.id] !== null)

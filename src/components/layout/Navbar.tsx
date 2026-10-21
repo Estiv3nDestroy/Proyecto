@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Cloud, CloudOff, CloudUpload, LogOut, Menu, UserCircle2 } from "lucide-react";
+import { Cloud, CloudOff, CloudUpload, LogOut, Menu, Settings, UserCircle2 } from "lucide-react";
 import type { AuthUser } from "../../hooks/useAuth";
 import type { SyncStatus } from "../../hooks/useCloudSync";
 import { NotebookArt } from "../ui/Notebook";
@@ -11,6 +11,7 @@ interface NavbarProps {
   lastSyncedAt: Date | null;
   onLogout: () => void;
   onOpenAuthModal: () => void;
+  onOpenAccount: () => void;
   onToggleMobileSidebar: () => void;
   /** Espacio para acciones extra (ej. el interruptor de tema). */
   rightSlot?: ReactNode;
@@ -26,6 +27,7 @@ export function Navbar({
   lastSyncedAt,
   onLogout,
   onOpenAuthModal,
+  onOpenAccount,
   onToggleMobileSidebar,
   rightSlot,
 }: NavbarProps) {
@@ -106,6 +108,15 @@ export function Navbar({
                   {user.name ?? user.email.split("@")[0]}
                 </span>
               </span>
+              <button
+                type="button"
+                onClick={onOpenAccount}
+                className="grid h-11 w-11 place-items-center rounded-xl text-[var(--ink-faint)] transition hover:bg-[var(--surface-2)] hover:text-[var(--ink-soft)]"
+                aria-label="Mi cuenta"
+                title="Mi cuenta"
+              >
+                <Settings className="h-4 w-4" />
+              </button>
               <button
                 type="button"
                 onClick={onLogout}
