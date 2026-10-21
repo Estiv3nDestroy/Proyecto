@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sin conexión · NotaMínima</title>
+    <style>
+      body {
+        font-family: "DM Sans", system-ui, sans-serif;
+        background: #fffdf6;
+        color: #1e3a5f;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 1.5rem;
+      }
+      .card {
+        max-width: 28rem;
+        text-align: center;
+      }
+      .emoji { font-size: 3.5rem; }
+      h1 { font-size: 1.75rem; margin: 1rem 0 0.5rem; }
+      p { color: #4a5e7a; line-height: 1.6; font-size: 0.95rem; }
+      button {
+        margin-top: 1.5rem;
+        padding: 0.75rem 1.75rem;
+        background: #1e3a5f;
+        color: #fffdf6;
+        border: none;
+        border-radius: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      button:hover { opacity: 0.9; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="emoji">📓</div>
+      <h1>No hay conexión</h1>
+      <p>
+        NotaMínima sigue funcionando sin internet. Tus materias y notas están guardadas
+        en este dispositivo. Vuelve a conectarte para sincronizar con la nube.
+      </p>
+      <button onclick="window.location.reload()">Reintentar</button>
+    </div>
+  </body>
+</html>

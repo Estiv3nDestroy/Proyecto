@@ -48,6 +48,8 @@ import { BackupModal } from "./components/settings/BackupModal";
 import { AccountPanel } from "./components/auth/AccountPanel";
 import { PrivacyScreen } from "./components/auth/PrivacyScreen";
 import { LocalModeBanner } from "./components/layout/LocalModeBanner";
+import { UpdateNotice, useServiceWorkerUpdate } from "./components/layout/UpdateNotice";
+import { Onboarding } from "./components/layout/Onboarding";
 import type { AcademicConfig, GradesRecord, Subject } from "./types/academic";
 import { cn } from "./utils/cn";
 
@@ -115,6 +117,7 @@ export default function App() {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useLocalStorage<boolean>("notaminima::banner-dismissed", false);
+  const [hasOnboarded, setHasOnboarded] = useLocalStorage<boolean>("notaminima::onboarded", false);
   const [mainTab, setMainTab] = useState<MainTab>("calculator");
   const [tabKey, setTabKey] = useState(0);
 
@@ -126,6 +129,9 @@ export default function App() {
     subjects,
     pomodoro.sessions,
   );
+
+  // Service worker update
+  const { needsUpdate, applyUpdate, dismissUpdate } = useServiceWorkerUpdate();
 
   /* ------------------ Sincronización con la nube ------------------ */
 
@@ -299,6 +305,16 @@ export default function App() {
     );
   }
 
+  /* ------------------ Onboarding (primera vez) ------------------ */
+
+  if (!hasOnboarded) {
+    return (
+      <>
+        <Onboarding onComplete={() => setHasOnboarded(true)} />
+      </>
+    );
+  }
+
   /* ------------------ Aplicación ------------------ */
 
   const needsSubject = mainTab === "projection" || mainTab === "cuts";
@@ -315,6 +331,7 @@ export default function App() {
         lastSyncedAt={lastSyncedAt}
         onLogout={handleLogout}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenAccount={() => setIsAccountOpen(true)}
         onToggleMobileSidebar={() => setIsMobileSidebarOpen((open) => !open)}
         rightSlot={
           <>
@@ -605,6 +622,10 @@ export default function App() {
 
       {isPrivacyOpen ? (
         <PrivacyScreen onClose={() => setIsPrivacyOpen(false)} />
+      ) : null}
+
+      {needsUpdate ? (
+        <UpdateNotice onUpdate={applyUpdate} onDismiss={dismissUpdate} />
       ) : null}
 
       <ToastViewport toasts={toasts} onDismiss={dismiss} />

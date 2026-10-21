@@ -8,10 +8,20 @@
  *    aunque esté sin internet (por ejemplo, en el salón sin señal).
  *  - Recursos estáticos: "stale while revalidate" para arranque instantáneo.
  *  - Peticiones a Supabase: nunca se cachean (siempre datos frescos).
+ *  - Mensaje SKIP_WAITING: activa la nueva versión al instante cuando el
+ *    usuario hace clic en "Actualizar".
  */
 
-const CACHE_NAME = "notaminima-v1";
-const PRECACHE_URLS = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.svg", "./icon-512.svg"];
+const CACHE_NAME = "notaminima-v2";
+const PRECACHE_URLS = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./offline.html",
+  "./icon-192.svg",
+  "./icon-512.svg",
+  "./og-image.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -31,16 +41,21 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
-  // Solo gestionamos peticiones GET del mismo origen.
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return; // Supabase, Google Fonts, etc.
+  if (url.origin !== self.location.origin) return;
 
-  // Navegación: red primero, caché como respaldo offline.
+  // Navegación: red primero, caché como respaldo, offline page como último recurso.
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
@@ -49,7 +64,11 @@ self.addEventListener("fetch", (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put("./index.html", copy));
           return response;
         })
-        .catch(() => caches.match("./index.html").then((cached) => cached ?? Response.error())),
+        .catch(() =>
+          caches
+            .match("./index.html")
+            .then((cached) => cached ?? caches.match("./offline.html").then((offline) => offline ?? Response.error())),
+        ),
     );
     return;
   }

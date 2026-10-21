@@ -7,15 +7,6 @@ const TABLE_NAME = "user_subjects";
 /** Estado de sincronización que se muestra en la interfaz. */
 export type SyncStatus = "idle" | "downloading" | "uploading" | "synced" | "error";
 
-interface CloudRow {
-  id: string;
-  name: string;
-  config: Subject["config"];
-  grades: Subject["grades"];
-  created_at: string;
-  updated_at?: string;
-}
-
 /**
  * Sincroniza las materias del estudiante con Supabase usando upsert por id
  * (no borra y reinserta). Incluye debounce, reintento automático y detección
