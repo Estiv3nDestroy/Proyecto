@@ -6,7 +6,7 @@
  * no dependa de valores "mágicos" repetidos en múltiples lugares.
  */
 
-import type { AcademicConfig, CutAssessment, ScalePreset, Subject } from "../types/academic";
+import type { AcademicConfig, CutAssessment, ScalePreset, Semester, Subject } from "../types/academic";
 
 /** Genera un identificador único robusto (con fallback si el entorno no soporta crypto.randomUUID). */
 export function generateId(): string {
@@ -56,12 +56,24 @@ export function createDefaultConfig(): AcademicConfig {
 }
 
 /** Crea una materia nueva con configuración por defecto y notas vacías. */
-export function createSubject(name: string): Subject {
+export function createSubject(name: string, semesterId?: string | null): Subject {
   return {
     id: generateId(),
     name,
     config: createDefaultConfig(),
     grades: { corte1: null, corte2: null, corte3: null },
+    createdAt: Date.now(),
+    credits: 3,
+    semesterId: semesterId ?? null,
+  };
+}
+
+/** Crea un semestre nuevo con un nombre dado. */
+export function createSemester(name: string): Semester {
+  return {
+    id: generateId(),
+    name,
+    isArchived: false,
     createdAt: Date.now(),
   };
 }

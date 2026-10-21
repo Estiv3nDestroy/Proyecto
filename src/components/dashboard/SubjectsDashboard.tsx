@@ -11,14 +11,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import type { Subject } from "../../types/academic";
+import type { Semester, Subject } from "../../types/academic";
 import { evaluateSubject } from "../../utils/subjectStatus";
 import { classifyGrade, formatGrade, roundGrade } from "../../utils/gradeMath";
+import { creditWeightedAverage, getCredits, semesterProgress } from "../../utils/semesterMath";
 import { BooksArt, CountUp, Paper, RulerBar, Stamp } from "../ui/Notebook";
 
 interface SubjectsDashboardProps {
   subjects: Subject[];
   onSelectSubject: (id: string) => void;
+  semesters?: Semester[];
+  activeSemesterId?: string | null;
 }
 
 const TONE_COLOR: Record<"pass" | "risk" | "fail", string> = {
@@ -43,23 +46,26 @@ export function SubjectsDashboard({ subjects, onSelectSubject }: SubjectsDashboa
         nota: roundGrade(value),
         meta: subject.config.minPassingGrade,
         max: subject.config.maxGrade,
+        credits: getCredits(subject),
         hasData: evaluation.knownCutsCount > 0,
         tone: classifyGrade(value, subject.config.minPassingGrade),
       };
     });
 
     const withData = rows.filter((row) => row.hasData);
-    const accumulated =
-      withData.length > 0
-        ? roundGrade(withData.reduce((sum, row) => sum + row.nota, 0) / withData.length)
-        : 0;
+    // Credit-weighted average instead of simple arithmetic mean
+    const accumulated = creditWeightedAverage(subjects);
     const target =
       subjects.length > 0
         ? roundGrade(
-            subjects.reduce((sum, s) => sum + s.config.minPassingGrade, 0) / subjects.length,
+            subjects.reduce((sum, s) => sum + s.config.minPassingGrade * getCredits(s), 0) /
+              subjects.reduce((sum, s) => sum + getCredits(s), 0),
           )
         : 3;
     const maxScale = subjects[0]?.config.maxGrade ?? 5;
+
+    const progress = semesterProgress(subjects, "");
+    const totalCredits = subjects.reduce((sum, s) => sum + getCredits(s), 0);
 
     return {
       rows,
@@ -67,6 +73,8 @@ export function SubjectsDashboard({ subjects, onSelectSubject }: SubjectsDashboa
       accumulated,
       target,
       maxScale,
+      progress,
+      totalCredits,
       passing: withData.filter((row) => row.tone === "pass").length,
       atRisk: withData.filter((row) => row.tone !== "pass").length,
     };
@@ -108,7 +116,7 @@ export function SubjectsDashboard({ subjects, onSelectSubject }: SubjectsDashboa
             label="Promedio acumulado del semestre"
           />
           <p className="mt-2 text-xs text-[var(--ink-soft)]">
-            Meta del semestre: {formatGrade(data.target, 1)}
+            Meta del semestre: {formatGrade(data.target, 1)} · Ponderado por créditos
           </p>
         </Paper>
 
@@ -119,6 +127,9 @@ export function SubjectsDashboard({ subjects, onSelectSubject }: SubjectsDashboa
           <p className="mt-1 text-5xl font-bold tabular-nums text-[var(--ink)]">{subjects.length}</p>
           <p className="mt-3 text-xs text-[var(--ink-soft)]">
             {data.withDataCount} con notas · {subjects.length - data.withDataCount} sin empezar
+          </p>
+          <p className="mt-1 text-xs text-[var(--ink-faint)]">
+            {data.totalCredits} créditos en total
           </p>
         </Paper>
 

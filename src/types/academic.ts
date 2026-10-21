@@ -51,7 +51,81 @@ export interface Subject {
   config: AcademicConfig;
   grades: GradesRecord;
   createdAt: number;
+  /** Créditos académicos de la materia (para promedio ponderado). Default: 3. */
+  credits?: number;
+  /** ID del semestre al que pertenece. Si es null/undefined, es "general". */
+  semesterId?: string | null;
 }
+
+/** Un semestre académico (ej. "2026-1", "2026-2"). */
+export interface Semester {
+  id: string;
+  name: string;
+  isArchived: boolean;
+  createdAt: number;
+}
+
+/** Nivel de riesgo de una materia para el plan de estudio. */
+export type RiskLevel = "green" | "yellow" | "red";
+
+/** Item de agenda: examen, entrega o presentación con fecha. */
+export interface AgendaItem {
+  id: string;
+  subjectId: string;
+  title: string;
+  date: string;
+  type: "exam" | "assignment" | "presentation" | "other";
+  isDone: boolean;
+}
+
+/** Sesión de estudio registrada por el temporizador Pomodoro. */
+export interface StudySession {
+  id: string;
+  subjectId: string;
+  durationMinutes: number;
+  date: string;
+}
+
+/** Meta académica: por materia o global. */
+export interface Goal {
+  id: string;
+  subjectId: string | null;
+  targetGrade: number;
+}
+
+/** Insignia/logro desbloqueable. */
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlockedAt: number | null;
+}
+
+/** Foto del promedio en un momento dado (para el historial). */
+export interface GradeSnapshot {
+  id: string;
+  date: string;
+  semesterId: string | null;
+  average: number;
+  subjectCount: number;
+}
+
+/** Escenario hipotético para el simulador "¿y si?". */
+export interface WhatIfScenario {
+  cutId: CutId;
+  hypotheticalGrade: number;
+}
+
+/** Resultado del simulador "¿y si?". */
+export interface WhatIfResult {
+  projectedFinal: number;
+  wouldPass: boolean;
+  deltaFromCurrent: number;
+}
+
+/** Tipo de escenario preestablecido. */
+export type ScenarioPreset = "best" | "worst" | "realistic";
 
 /** Resultado de una validación genérica dentro del sistema. */
 export interface ValidationResult {

@@ -43,6 +43,7 @@
 
   /* --- Superficies y sombras --- */
   --surface: #fffdf6;
+  --surface-1: #faf6ea;
   --surface-2: #faf6ea;
   --border: #e6ddc8;
   --shadow-paper: 0 1px 2px rgb(60 50 30 / 0.07), 0 8px 20px -8px rgb(60 50 30 / 0.18);
@@ -92,6 +93,7 @@
   --fail-bg: #40182a;
 
   --surface: #161d2b;
+  --surface-1: #1b2334;
   --surface-2: #1b2334;
   --border: #2a3448;
   --shadow-paper: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 24px -10px rgb(0 0 0 / 0.7);
@@ -599,4 +601,52 @@ body {
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   SLIDER "¿Y SI?" — Estilo cuaderno
+   ========================================================================== */
+
+.slider-whatif {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  outline: none;
+}
+
+.slider-whatif::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--paper);
+  box-shadow: 0 1px 4px rgb(60 50 30 / 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.slider-whatif::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider-whatif::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--paper);
+  box-shadow: 0 1px 4px rgb(60 50 30 / 0.3);
+  cursor: pointer;
+}
+
+.dark .slider-whatif::-webkit-slider-thumb {
+  background: var(--ink-soft);
+}
+.dark .slider-whatif::-moz-range-thumb {
+  background: var(--ink-soft);
 }

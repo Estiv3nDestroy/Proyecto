@@ -22,8 +22,8 @@ export function useSubjects() {
   );
 
   const addSubject = useCallback(
-    (name: string) => {
-      const subject = createSubject(name.trim());
+    (name: string, semesterId?: string | null) => {
+      const subject = createSubject(name.trim(), semesterId);
       setSubjects((previous) => [...previous, subject]);
       setSelectedId(subject.id);
       setLastError(null);
@@ -105,6 +105,17 @@ export function useSubjects() {
     [setSubjects],
   );
 
+  const setSubjectSemester = useCallback(
+    (id: string, semesterId: string | null) => {
+      setSubjects((previous) =>
+        previous.map((subject) =>
+          subject.id === id ? { ...subject, semesterId } : subject,
+        ),
+      );
+    },
+    [setSubjects],
+  );
+
   return {
     subjects,
     selectedSubject,
@@ -116,6 +127,7 @@ export function useSubjects() {
     updateSubjectConfig,
     updateSubjectGrades,
     renameSubject,
+    setSubjectSemester,
     setSubjectsFromExternal,
   };
 }
