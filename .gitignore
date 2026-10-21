@@ -1,0 +1,5 @@
+
+# Variables de entorno (credenciales)
+.env
+.env.local
+.env.*.local
