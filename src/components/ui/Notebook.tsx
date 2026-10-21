@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
+import type { SheetStyle } from "../../hooks/useNotebookStyle";
 
 /* ==========================================================================
    PIEZAS VISUALES DEL "CUADERNO UNIVERSITARIO PREMIUM"
@@ -9,8 +10,10 @@ import { cn } from "../../utils/cn";
 
 interface PaperProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  /** Dibuja las líneas horizontales del cuaderno. */
+  /** Dibuja las líneas horizontales del cuaderno (legacy: usa sheetStyle). */
   ruled?: boolean;
+  /** Estilo de hoja explícito. Si se pasa, sobreescribe `ruled`. */
+  sheetStyle?: SheetStyle;
   /** Dibuja el margen rojo vertical. */
   margin?: boolean;
   /** Dibuja los agujeros de las argollas. */
@@ -27,6 +30,7 @@ interface PaperProps extends HTMLAttributes<HTMLDivElement> {
 export function Paper({
   children,
   ruled = false,
+  sheetStyle,
   margin = false,
   holes = false,
   torn = false,
@@ -35,11 +39,14 @@ export function Paper({
   className,
   ...props
 }: PaperProps) {
+  const activeStyle = sheetStyle ?? (ruled ? "ruled" : undefined);
+  const sheetClass = activeStyle ? `paper-${activeStyle}` : undefined;
+
   return (
     <div
       className={cn(
         "paper",
-        ruled && "paper-ruled",
+        sheetClass,
         margin && "paper-margin",
         holes && "paper-holes",
         torn && "paper-torn",
@@ -310,4 +317,86 @@ export function BooksArt({ className }: { className?: string }) {
       </g>
     </svg>
   );
+}
+
+/** Sacapuntas metálico. */
+export function SharpenerArt({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Sacapuntas">
+      <rect x="10" y="22" width="44" height="30" rx="6" fill="var(--ink-soft)" />
+      <rect x="10" y="22" width="44" height="8" rx="4" fill="var(--ink-faint)" opacity="0.7" />
+      <path d="M28 30 L36 30 L40 44 L24 44 Z" fill="var(--paper)" opacity="0.9" />
+      <path d="M32 30 L32 44" stroke="var(--rule-margin)" strokeWidth="1.5" />
+      <rect x="16" y="14" width="8" height="6" rx="1.5" fill="var(--rule-margin)" />
+    </svg>
+  );
+}
+
+/** Regla de 30 cm. */
+export function RulerArt({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 96 32" className={className} role="img" aria-label="Regla">
+      <rect x="4" y="8" width="88" height="16" rx="2" fill="var(--hl-yellow)" opacity="0.85" />
+      <rect x="4" y="8" width="88" height="16" rx="2" fill="none" stroke="var(--ink)" strokeWidth="1.5" />
+      <g stroke="var(--ink)" strokeWidth="1.2" strokeLinecap="round">
+        {Array.from({ length: 15 }).map((_, i) => (
+          <path key={i} d={`M${10 + i * 6} 8 v${i % 5 === 0 ? 8 : 5}`} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/** Taza de café humeante. */
+export function CoffeeArt({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 64 64" className={className} role="img" aria-label="Taza de café">
+      <path d="M40 14 Q42 10 40 6 Q38 2 40 0" stroke="var(--ink-faint)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5" />
+      <path d="M46 16 Q48 12 46 8" stroke="var(--ink-faint)" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.4" />
+      <path d="M14 26 h28 v14 a14 14 0 0 1-28 0z" fill="var(--ink)" />
+      <path d="M42 30 h6 a5 5 0 0 1 0 10 h-6" fill="none" stroke="var(--ink)" strokeWidth="3" />
+      <ellipse cx="28" cy="26" rx="14" ry="3" fill="var(--ink-soft)" opacity="0.6" />
+    </svg>
+  );
+}
+
+/** Post-it grande decorativo con texto manuscrito. */
+export function StickyNoteArt({
+  className,
+  text = "¡Tú puedes!",
+  tone = "yellow",
+}: {
+  className?: string;
+  text?: string;
+  tone?: "yellow" | "green" | "pink" | "blue";
+}) {
+  return (
+    <PostIt tone={tone} className={className}>
+      <span className="font-hand text-2xl">{text}</span>
+    </PostIt>
+  );
+}
+
+/* ==========================================================================
+   SKELETON DE CARGA (renglones simulando papel en blanco)
+   ========================================================================== */
+
+/** Bloque skeleton con N renglones que simulan texto cargando. */
+export function Skeleton({ lines = 4, className }: { lines?: number; className?: string }) {
+  return (
+    <div className={cn("space-y-2.5", className)} aria-hidden="true">
+      {Array.from({ length: lines }).map((_, i) => (
+        <div
+          key={i}
+          className="skeleton-line"
+          style={{ width: i === lines - 1 ? "60%" : "100%" }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Tarjeta skeleton para grids de carga. */
+export function SkeletonCard({ className }: { className?: string }) {
+  return <div className={cn("skeleton-block", className)} aria-hidden="true" />;
 }

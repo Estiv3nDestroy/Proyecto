@@ -53,6 +53,15 @@
   --radius-md: 14px;
   --radius-lg: 20px;
 
+  /* --- Color de tinta activo (sobreescribible por preferencia) --- */
+  --ink-active: var(--ink);
+  --ink-soft-active: var(--ink-soft);
+  --ink-faint-active: var(--ink-faint);
+  --rule-line-active: var(--rule-line);
+
+  /* --- Color de resaltador activo --- */
+  --hl-active: var(--hl-yellow);
+
   color-scheme: light;
 }
 
@@ -91,6 +100,39 @@
   color-scheme: dark;
 }
 
+/* ---------- Overrides por preferencia de tinta ---------- */
+html[data-ink="black"] {
+  --ink-active: #2b2b2b;
+  --ink-soft-active: #595959;
+  --ink-faint-active: #999;
+  --rule-line-active: #d6d6d6;
+}
+html[data-ink="green"] {
+  --ink-active: #1d5e2e;
+  --ink-soft-active: #4a8c5a;
+  --ink-faint-active: #8bb89a;
+  --rule-line-active: #c3ddca;
+}
+.dark html[data-ink="black"],
+html.dark[data-ink="black"] {
+  --ink-active: #e0e0e0;
+  --ink-soft-active: #b0b0b0;
+  --ink-faint-active: #777;
+  --rule-line-active: #3a3a3a;
+}
+html.dark[data-ink="green"] {
+  --ink-active: #8ee6a8;
+  --ink-soft-active: #6ab888;
+  --ink-faint-active: #4a8862;
+  --rule-line-active: #2a4a36;
+}
+
+/* ---------- Override por preferencia de resaltador ---------- */
+html[data-hl="green"] { --hl-active: var(--hl-green); }
+html[data-hl="pink"]  { --hl-active: var(--hl-pink); }
+html[data-hl="blue"]  { --hl-active: var(--hl-blue); }
+html[data-hl="yellow"]{ --hl-active: var(--hl-yellow); }
+
 /* ==========================================================================
    Base
    ========================================================================== */
@@ -103,7 +145,7 @@ html {
 
 body {
   font-family: var(--font-sans);
-  color: var(--ink);
+  color: var(--ink-active);
   background-color: var(--desk);
   /* Escritorio de madera sutil en degradado radial */
   background-image:
@@ -142,10 +184,56 @@ body {
     to bottom,
     transparent 0px,
     transparent 29px,
-    var(--rule-line) 29px,
-    var(--rule-line) 30px
+    var(--rule-line-active) 29px,
+    var(--rule-line-active) 30px
   );
   background-position: 0 6px;
+}
+
+/* Hoja cuadriculada: cuadrícula de 24px */
+.paper-grid {
+  background-image:
+    linear-gradient(to right, var(--rule-line-active) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--rule-line-active) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+
+/* Hoja de puntos: patrón de puntos cada 22px */
+.paper-dotted {
+  background-image: radial-gradient(circle, var(--rule-line-active) 1.2px, transparent 1.2px);
+  background-size: 22px 22px;
+  background-position: 11px 11px;
+}
+
+/* Hoja kraft: papel reciclado marrón con textura sutil */
+.paper-kraft {
+  background-color: #d8c9a8;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 29px,
+      rgb(120 100 70 / 0.12) 29px,
+      rgb(120 100 70 / 0.12) 30px
+    ),
+    radial-gradient(circle at 20% 30%, rgb(140 110 75 / 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 75% 70%, rgb(100 80 55 / 0.06) 0%, transparent 50%);
+  background-position: 0 6px, 0 0, 0 0;
+  --paper-edge: #c4b48f;
+}
+.dark .paper-kraft {
+  background-color: #4a4035;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 29px,
+      rgb(200 180 140 / 0.1) 29px,
+      rgb(200 180 140 / 0.1) 30px
+    ),
+    radial-gradient(circle at 20% 30%, rgb(160 130 90 / 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 75% 70%, rgb(120 95 65 / 0.08) 0%, transparent 50%);
 }
 
 /* Margen rojo vertical a la izquierda */
@@ -263,12 +351,14 @@ body {
 
 /* Resaltado de marcador (trazo detrás del texto) */
 .marker {
-  background-image: linear-gradient(transparent 58%, var(--hl-yellow) 58%);
+  background-image: linear-gradient(transparent 58%, var(--hl-active) 58%);
   padding: 0 0.15em;
 }
 .marker-green { background-image: linear-gradient(transparent 58%, var(--hl-green) 58%); }
 .marker-pink { background-image: linear-gradient(transparent 58%, var(--hl-pink) 58%); }
 .marker-blue { background-image: linear-gradient(transparent 58%, var(--hl-blue) 58%); }
+/* Variante que siempre usa el resaltador activo */
+.marker-active { background-image: linear-gradient(transparent 58%, var(--hl-active) 58%); }
 
 /* Subrayado dibujado a mano */
 .underline-hand {
@@ -449,3 +539,64 @@ body {
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); background-clip: content-box; }
+
+/* ==========================================================================
+   TRANSICIÓN SUAVE DE TEMA (claro / oscuro)
+   ========================================================================== */
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease,
+    background-image 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+/* ==========================================================================
+   ANIMACIÓN "PASAR DE PÁGINA" (al cambiar de pestaña)
+   ========================================================================== */
+
+@keyframes page-turn {
+  0%   { opacity: 0; transform: translateX(24px) rotateY(8deg); }
+  100% { opacity: 1; transform: translateX(0) rotateY(0deg); }
+}
+
+.animate-page-turn {
+  animation: page-turn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+
+/* ==========================================================================
+   SKELETON DE CARGA (renglones de papel)
+   ========================================================================== */
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--border) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-block {
+  height: 80px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--surface-2) 25%,
+    var(--border) 50%,
+    var(--surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}

@@ -4,6 +4,7 @@ import { useSubjects } from "./hooks/useSubjects";
 import { useAuth } from "./hooks/useAuth";
 import { useCloudSync } from "./hooks/useCloudSync";
 import { useTheme } from "./hooks/useTheme";
+import { useNotebookStyle } from "./hooks/useNotebookStyle";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import { SubjectSidebar } from "./components/subjects/SubjectSidebar";
 import { SubjectWorkspace } from "./components/subjects/SubjectWorkspace";
@@ -15,6 +16,7 @@ import { Navbar } from "./components/layout/Navbar";
 import { AuthModal } from "./components/auth/AuthModal";
 import { ToastViewport, useToasts } from "./components/ui/Toast";
 import { BooksArt, Paper } from "./components/ui/Notebook";
+import { StyleSettings } from "./components/ui/StyleSettings";
 import type { AcademicConfig, GradesRecord, Subject } from "./types/academic";
 import { cn } from "./utils/cn";
 
@@ -45,12 +47,14 @@ export default function App() {
   const { syncStatus, lastSyncedAt, syncError, downloadSubjects, uploadSubjects, resetSync } =
     useCloudSync(user?.id ?? null);
   const { isDark, toggleTheme } = useTheme();
+  const { style: notebookStyle, setSheet, setHighlighter, setInk } = useNotebookStyle();
   const { toasts, notify, dismiss } = useToasts();
 
   const [hasEntered, setHasEntered] = useLocalStorage<boolean>("notaminima::entered", false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [mainTab, setMainTab] = useState<MainTab>("calculator");
+  const [tabKey, setTabKey] = useState(0);
 
   /* ------------------ Sincronización con la nube ------------------ */
 
@@ -194,15 +198,25 @@ export default function App() {
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
         onToggleMobileSidebar={() => setIsMobileSidebarOpen((open) => !open)}
         rightSlot={
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--border)] text-[var(--ink-soft)] transition hover:bg-[var(--surface-2)]"
-            aria-label={isDark ? "Cambiar a cuaderno diurno" : "Cambiar a cuaderno nocturno"}
-            title={isDark ? "Cuaderno diurno" : "Cuaderno nocturno"}
-          >
-            {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </button>
+          <>
+            <StyleSettings
+              sheet={notebookStyle.sheet}
+              highlighter={notebookStyle.highlighter}
+              ink={notebookStyle.ink}
+              onSheetChange={setSheet}
+              onHighlighterChange={setHighlighter}
+              onInkChange={setInk}
+            />
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="grid h-11 w-11 place-items-center rounded-xl border border-[var(--border)] text-[var(--ink-soft)] transition hover:bg-[var(--surface-2)]"
+              aria-label={isDark ? "Cambiar a cuaderno diurno" : "Cambiar a cuaderno nocturno"}
+              title={isDark ? "Cuaderno diurno" : "Cuaderno nocturno"}
+            >
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+          </>
         }
       />
 
@@ -251,7 +265,10 @@ export default function App() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setMainTab(tab.id)}
+                onClick={() => {
+                  setMainTab(tab.id);
+                  setTabKey((k) => k + 1);
+                }}
                 aria-current={mainTab === tab.id ? "page" : undefined}
                 className={cn(
                   "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[11px] font-bold transition sm:flex-row sm:gap-1.5 sm:text-sm",
@@ -268,6 +285,7 @@ export default function App() {
           </nav>
 
           {/* Vistas */}
+          <div key={tabKey} className="animate-page-turn">
           {mainTab === "calculator" ? (
             <CategoryCalculator
               subjectName={selectedSubject?.name}
@@ -292,7 +310,7 @@ export default function App() {
               </button>
             </Paper>
           ) : mainTab === "projection" && selectedSubject ? (
-            <Paper ruled margin holes animate className="p-4 pl-12 sm:p-6 sm:pl-16">
+            <Paper sheetStyle={notebookStyle.sheet} margin holes animate className="p-4 pl-12 sm:p-6 sm:pl-16">
               <SubjectWorkspace
                 key={selectedSubject.id}
                 subject={selectedSubject}
@@ -307,6 +325,7 @@ export default function App() {
           ) : selectedSubject ? (
             <CutCalculator config={selectedSubject.config} onChange={handleConfigChange} />
           ) : null}
+          </div>
         </section>
       </main>
 

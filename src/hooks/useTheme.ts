@@ -27,6 +27,9 @@ export function useTheme() {
   }, [theme]);
 
   const toggleTheme = useCallback(() => {
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    window.setTimeout(() => root.classList.remove("theme-transition"), 450);
     setTheme((current) => (current === "dark" ? "light" : "dark"));
   }, [setTheme]);
 
