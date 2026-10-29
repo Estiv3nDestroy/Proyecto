@@ -13,7 +13,6 @@
 }
 
 :root {
-  /* --- Papel y tinta --- */
   --paper: #fffdf6;
   --paper-edge: #f3eddc;
   --desk: #e8e2d4;
@@ -21,19 +20,16 @@
   --ink-soft: #52708f;
   --ink-faint: #8aa0b8;
 
-  /* --- Líneas del cuaderno --- */
-  --rule-line: #cfe0f2;
+  --rule-line: #dfeaf8;
   --rule-margin: #e86a6a;
   --hole: #e4ded0;
   --hole-ring: #cfc8b8;
 
-  /* --- Resaltadores --- */
   --hl-green: #b9f6c3;
   --hl-yellow: #ffe9a8;
   --hl-pink: #ffc9d8;
   --hl-blue: #bfe3ff;
 
-  /* --- Semántica de estado --- */
   --pass: #15803d;
   --pass-bg: #d9f7e0;
   --risk: #a16207;
@@ -41,32 +37,31 @@
   --fail: #be123c;
   --fail-bg: #ffe0e6;
 
-  /* --- Superficies y sombras --- */
   --surface: #fffdf6;
   --surface-1: #faf6ea;
-  --surface-2: #faf6ea;
-  --border: #e6ddc8;
-  --shadow-paper: 0 1px 2px rgb(60 50 30 / 0.07), 0 8px 20px -8px rgb(60 50 30 / 0.18);
+  --surface-2: #f4efe4;
+  --border: #e3d9c0;
+  --shadow-paper: 0 1px 2px rgb(60 50 30 / 0.07), 0 10px 25px -10px rgb(60 50 30 / 0.18);
   --shadow-lift: 0 2px 4px rgb(60 50 30 / 0.08), 0 18px 36px -14px rgb(60 50 30 / 0.3);
 
-  /* --- Radios --- */
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
 
-  /* --- Color de tinta activo (sobreescribible por preferencia) --- */
   --ink-active: var(--ink);
   --ink-soft-active: var(--ink-soft);
   --ink-faint-active: var(--ink-faint);
   --rule-line-active: var(--rule-line);
-
-  /* --- Color de resaltador activo --- */
   --hl-active: var(--hl-yellow);
+
+  --accent: #6d7ef3;
+  --accent-soft: #e8ebff;
+  --accent-strong: #4f5fe0;
+  --glass: rgba(255, 255, 255, 0.52);
 
   color-scheme: light;
 }
 
-/* ---------- Cuaderno Nocturno (modo oscuro) ---------- */
 .dark {
   --paper: #161d2b;
   --paper-edge: #1e2636;
@@ -94,15 +89,19 @@
 
   --surface: #161d2b;
   --surface-1: #1b2334;
-  --surface-2: #1b2334;
+  --surface-2: #212b3d;
   --border: #2a3448;
   --shadow-paper: 0 1px 2px rgb(0 0 0 / 0.4), 0 10px 24px -10px rgb(0 0 0 / 0.7);
   --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 22px 44px -16px rgb(0 0 0 / 0.8);
 
+  --accent: #8ca2ff;
+  --accent-soft: rgba(140, 162, 255, 0.12);
+  --accent-strong: #a7b7ff;
+  --glass: rgba(19, 26, 39, 0.64);
+
   color-scheme: dark;
 }
 
-/* ---------- Overrides por preferencia de tinta ---------- */
 html[data-ink="black"] {
   --ink-active: #2b2b2b;
   --ink-soft-active: #595959;
@@ -129,15 +128,10 @@ html.dark[data-ink="green"] {
   --rule-line-active: #2a4a36;
 }
 
-/* ---------- Override por preferencia de resaltador ---------- */
 html[data-hl="green"] { --hl-active: var(--hl-green); }
 html[data-hl="pink"]  { --hl-active: var(--hl-pink); }
 html[data-hl="blue"]  { --hl-active: var(--hl-blue); }
 html[data-hl="yellow"]{ --hl-active: var(--hl-yellow); }
-
-/* ==========================================================================
-   Base
-   ========================================================================== */
 
 html {
   -webkit-font-smoothing: antialiased;
@@ -149,27 +143,60 @@ body {
   font-family: var(--font-sans);
   color: var(--ink-active);
   background-color: var(--desk);
-  /* Escritorio de madera sutil en degradado radial */
   background-image:
-    radial-gradient(circle at 15% 10%, rgb(255 255 255 / 0.5) 0%, transparent 45%),
-    radial-gradient(circle at 85% 90%, rgb(255 255 255 / 0.35) 0%, transparent 50%);
+    radial-gradient(circle at 15% 10%, rgb(255 255 255 / 0.6) 0%, transparent 42%),
+    radial-gradient(circle at 80% 18%, rgb(118 145 255 / 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 85% 90%, rgb(255 255 255 / 0.3) 0%, transparent 42%);
   background-attachment: fixed;
   min-height: 100dvh;
 }
 
 .dark body {
   background-image:
-    radial-gradient(circle at 15% 10%, rgb(99 130 180 / 0.12) 0%, transparent 45%),
-    radial-gradient(circle at 85% 90%, rgb(120 90 180 / 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 15% 10%, rgb(99 130 180 / 0.1) 0%, transparent 42%),
+    radial-gradient(circle at 80% 18%, rgb(148 124 255 / 0.12) 0%, transparent 28%),
+    radial-gradient(circle at 85% 90%, rgb(120 90 180 / 0.1) 0%, transparent 42%);
 }
 
 .font-hand {
   font-family: var(--font-hand);
 }
 
-/* ==========================================================================
-   HOJA DE CUADERNO
-   ========================================================================== */
+.app-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  top: -140px;
+  right: -120px;
+  width: 420px;
+  height: 420px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgb(109 126 243 / 0.17), transparent 65%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.app-main {
+  position: relative;
+  z-index: 1;
+}
+
+.app-tabbar {
+  position: sticky;
+  top: 16px;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.88), rgb(255 255 255 / 0.76));
+  border-color: rgb(227 217 192 / 0.9);
+}
+
+.dark .app-tabbar {
+  background: linear-gradient(180deg, rgb(22 29 43 / 0.82), rgb(22 29 43 / 0.72));
+}
 
 .paper {
   position: relative;
@@ -178,9 +205,13 @@ body {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-paper);
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hoja rayada: líneas horizontales cada 30px */
+.paper:hover {
+  box-shadow: 0 1px 2px rgb(60 50 30 / 0.08), 0 14px 30px -16px rgb(60 50 30 / 0.25);
+}
+
 .paper-ruled {
   background-image: repeating-linear-gradient(
     to bottom,
@@ -192,7 +223,6 @@ body {
   background-position: 0 6px;
 }
 
-/* Hoja cuadriculada: cuadrícula de 24px */
 .paper-grid {
   background-image:
     linear-gradient(to right, var(--rule-line-active) 1px, transparent 1px),
@@ -201,14 +231,12 @@ body {
   background-position: 0 0;
 }
 
-/* Hoja de puntos: patrón de puntos cada 22px */
 .paper-dotted {
   background-image: radial-gradient(circle, var(--rule-line-active) 1.2px, transparent 1.2px);
   background-size: 22px 22px;
   background-position: 11px 11px;
 }
 
-/* Hoja kraft: papel reciclado marrón con textura sutil */
 .paper-kraft {
   background-color: #d8c9a8;
   background-image:
@@ -238,7 +266,6 @@ body {
     radial-gradient(circle at 75% 70%, rgb(120 95 65 / 0.08) 0%, transparent 50%);
 }
 
-/* Margen rojo vertical a la izquierda */
 .paper-margin::before {
   content: "";
   position: absolute;
@@ -257,7 +284,6 @@ body {
   }
 }
 
-/* Agujeros de argollas decorativos en el borde izquierdo */
 .paper-holes::after {
   content: "";
   position: absolute;
@@ -276,14 +302,9 @@ body {
   background-repeat: repeat-y;
 }
 
-/* Bordes ligeramente irregulares, como papel recortado a mano */
 .paper-torn {
   border-radius: 18px 20px 17px 21px / 20px 17px 21px 18px;
 }
-
-/* ==========================================================================
-   CINTA ADHESIVA (washi tape) y POST-IT
-   ========================================================================== */
 
 .washi {
   position: absolute;
@@ -303,18 +324,6 @@ body {
   background: linear-gradient(135deg, rgb(120 100 60 / 0.6), rgb(110 60 85 / 0.55));
 }
 
-.washi-tl {
-  top: -11px;
-  left: 26px;
-  transform: rotate(-6deg);
-}
-
-.washi-tr {
-  top: -11px;
-  right: 26px;
-  transform: rotate(5deg);
-}
-
 .postit {
   background: var(--hl-yellow);
   color: var(--ink);
@@ -326,10 +335,6 @@ body {
 .postit-pink { background: var(--hl-pink); }
 .postit-green { background: var(--hl-green); }
 .postit-blue { background: var(--hl-blue); }
-
-/* ==========================================================================
-   SELLOS, RESALTADO Y TACHADO
-   ========================================================================== */
 
 .stamp {
   display: inline-flex;
@@ -351,7 +356,6 @@ body {
 .stamp-risk { color: var(--risk); }
 .stamp-fail { color: var(--fail); }
 
-/* Resaltado de marcador (trazo detrás del texto) */
 .marker {
   background-image: linear-gradient(transparent 58%, var(--hl-active) 58%);
   padding: 0 0.15em;
@@ -359,10 +363,8 @@ body {
 .marker-green { background-image: linear-gradient(transparent 58%, var(--hl-green) 58%); }
 .marker-pink { background-image: linear-gradient(transparent 58%, var(--hl-pink) 58%); }
 .marker-blue { background-image: linear-gradient(transparent 58%, var(--hl-blue) 58%); }
-/* Variante que siempre usa el resaltador activo */
 .marker-active { background-image: linear-gradient(transparent 58%, var(--hl-active) 58%); }
 
-/* Subrayado dibujado a mano */
 .underline-hand {
   position: relative;
 }
@@ -379,7 +381,6 @@ body {
   transform: scaleY(0.35) rotate(-0.4deg);
 }
 
-/* Tachón de nota descartada */
 .struck {
   position: relative;
   opacity: 0.5;
@@ -394,10 +395,6 @@ body {
   background: var(--fail);
   transform: rotate(-2.5deg);
 }
-
-/* ==========================================================================
-   ANIMACIONES SUTILES
-   ========================================================================== */
 
 @keyframes paper-in {
   from { opacity: 0; transform: translateY(14px) rotate(-0.4deg); }
@@ -444,7 +441,6 @@ body {
   animation: confetti-fall 1.5s ease-in forwards;
 }
 
-/* Barra de progreso con aspecto de regla */
 .ruler-track {
   position: relative;
   background: var(--surface-2);
@@ -476,11 +472,8 @@ body {
   transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Respeta la preferencia de reducir movimiento */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -488,17 +481,12 @@ body {
   }
 }
 
-/* ==========================================================================
-   ACCESIBILIDAD Y FORMULARIOS
-   ========================================================================== */
-
 *:focus-visible {
   outline: 3px solid var(--rule-margin);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Objetivos táctiles mínimos de 44px en dispositivos sin ratón */
 @media (hover: none) and (pointer: coarse) {
   button,
   a[role="button"],
@@ -509,12 +497,11 @@ body {
   input,
   select,
   textarea {
-    font-size: 16px; /* evita el zoom automático de iOS */
+    font-size: 16px;
     min-height: 44px;
   }
 }
 
-/* Campo "escrito a mano" sobre la línea del cuaderno */
 .field-paper {
   background: transparent;
   border: 0;
@@ -531,7 +518,6 @@ body {
   color: var(--ink-faint);
 }
 
-/* Scrollbar discreta en tono papel */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
@@ -542,10 +528,6 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); background-clip: content-box; }
 
-/* ==========================================================================
-   TRANSICIÓN SUAVE DE TEMA (claro / oscuro)
-   ========================================================================== */
-
 .theme-transition,
 .theme-transition *,
 .theme-transition *::before,
@@ -553,10 +535,6 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease,
     background-image 0.4s ease, box-shadow 0.4s ease !important;
 }
-
-/* ==========================================================================
-   ANIMACIÓN "PASAR DE PÁGINA" (al cambiar de pestaña)
-   ========================================================================== */
 
 @keyframes page-turn {
   0%   { opacity: 0; transform: translateX(24px) rotateY(8deg); }
@@ -567,10 +545,6 @@ body {
   animation: page-turn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
   transform-origin: left center;
 }
-
-/* ==========================================================================
-   SKELETON DE CARGA (renglones de papel)
-   ========================================================================== */
 
 @keyframes skeleton-shimmer {
   0%   { background-position: -200% 0; }
@@ -602,10 +576,6 @@ body {
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
-
-/* ==========================================================================
-   SLIDER "¿Y SI?" — Estilo cuaderno
-   ========================================================================== */
 
 .slider-whatif {
   -webkit-appearance: none;
