@@ -351,6 +351,18 @@ body {
   z-index: 2;
 }
 
+.washi-tl {
+  top: 8px;
+  left: 12px;
+  transform: rotate(-8deg);
+}
+
+.washi-tr {
+  top: 8px;
+  right: 12px;
+  transform: rotate(8deg);
+}
+
 .dark .washi {
   background: linear-gradient(135deg, rgb(120 100 60 / 0.6), rgb(110 60 85 / 0.55));
 }
