@@ -121,19 +121,14 @@ export default function App() {
   const [mainTab, setMainTab] = useState<MainTab>("calculator");
   const [tabKey, setTabKey] = useState(0);
 
-  // Pomodoro for the currently selected subject
   const pomodoro = usePomodoro(selectedId);
 
-  // Achievements
   const { achievements, unlockedCount, newlyUnlocked, syncUnlocked } = useAchievements(
     subjects,
     pomodoro.sessions,
   );
 
-  // Service worker update
   const { needsUpdate, applyUpdate, dismissUpdate } = useServiceWorkerUpdate();
-
-  /* ------------------ Sincronización con la nube ------------------ */
 
   useEffect(() => {
     if (!user) {
@@ -173,8 +168,6 @@ export default function App() {
     [user, uploadSubjects],
   );
 
-  /* ------------------ Materias filtradas por semestre ------------------ */
-
   const visibleSubjects = useMemo(() => {
     if (activeSemesterId === null) return subjects;
     return subjects.filter((s) => (s.semesterId ?? null) === activeSemesterId);
@@ -184,8 +177,6 @@ export default function App() {
     () => visibleSubjects.find((s) => s.id === selectedId) ?? null,
     [visibleSubjects, selectedId],
   );
-
-  /* ------------------ Acciones sobre materias ------------------ */
 
   const handleAddSubject = useCallback(
     (name: string) => {
@@ -233,7 +224,6 @@ export default function App() {
     [visibleSelectedSubject, renameSubject, subjects, pushToCloud],
   );
 
-  /** Guarda la nota calculada en el primer corte que esté libre. */
   const handleSaveCalculatedGrade = useCallback(
     (grade: number) => {
       if (!visibleSelectedSubject) {
@@ -281,8 +271,6 @@ export default function App() {
     [setSubjectsFromExternal, pushToCloud, notify],
   );
 
-  /* ------------------ Pantalla de bienvenida ------------------ */
-
   if (!hasEntered) {
     return (
       <>
@@ -305,8 +293,6 @@ export default function App() {
     );
   }
 
-  /* ------------------ Onboarding (primera vez) ------------------ */
-
   if (!hasOnboarded) {
     return (
       <>
@@ -315,16 +301,12 @@ export default function App() {
     );
   }
 
-  /* ------------------ Aplicación ------------------ */
-
   const needsSubject = mainTab === "projection" || mainTab === "cuts";
   const showWhatIf = mainTab === "projection" && visibleSelectedSubject;
-
-  // Grid columns based on number of tabs
   const tabGridClass = "grid-cols-5 sm:grid-cols-9";
 
   return (
-    <div className="min-h-dvh">
+    <div className="app-shell theme-transition min-h-dvh">
       <Navbar
         user={user}
         syncStatus={syncStatus}
@@ -365,8 +347,7 @@ export default function App() {
         }
       />
 
-      <main className="mx-auto flex max-w-7xl gap-5 px-3 py-5 sm:px-6 lg:px-8">
-        {/* Barra lateral de escritorio */}
+      <main className="app-main mx-auto flex max-w-7xl gap-5 px-3 py-5 sm:px-6 lg:px-8">
         <aside className="hidden w-72 shrink-0 lg:block">
           <Paper className="sticky top-24 space-y-3 p-3">
             <SemesterSelector
@@ -388,7 +369,6 @@ export default function App() {
           </Paper>
         </aside>
 
-        {/* Cajón lateral en móvil */}
         {isMobileSidebarOpen ? (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div
@@ -417,19 +397,17 @@ export default function App() {
           </div>
         ) : null}
 
-        {/* Contenido principal */}
         <section className="min-w-0 flex-1 space-y-4">
-          {/* Banner modo local en móvil (arriba del contenido) */}
           {!user && !bannerDismissed ? (
             <LocalModeBanner
               onLogin={() => setIsAuthModalOpen(true)}
               onDismiss={() => setBannerDismissed(true)}
             />
           ) : null}
-          {/* Pestañas */}
+
           <nav
             className={cn(
-              "grid gap-1 rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[var(--shadow-paper)]",
+              "app-tabbar grid gap-1 rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[var(--shadow-paper)]",
               tabGridClass,
             )}
             aria-label="Secciones principales"
@@ -457,7 +435,6 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Vistas */}
           <div key={tabKey} className="animate-page-turn">
             {mainTab === "calculator" ? (
               <CategoryCalculator
@@ -526,9 +503,7 @@ export default function App() {
                     onConfigChange={handleConfigChange}
                     onGradesChange={handleGradesChange}
                     onRename={handleRename}
-                    onResetGrades={() =>
-                      handleGradesChange({ corte1: null, corte2: null, corte3: null })
-                    }
+                    onResetGrades={() => handleGradesChange({ corte1: null, corte2: null, corte3: null })}
                   />
                 </Paper>
                 {showWhatIf ? (
