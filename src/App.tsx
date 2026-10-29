@@ -407,7 +407,7 @@ export default function App() {
 
           <nav
             className={cn(
-              "app-tabbar grid gap-1 rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[var(--shadow-paper)]",
+              "app-tabbar grid gap-1.5 rounded-2xl border border-[var(--border)] bg-[var(--paper)] p-1.5 shadow-[var(--shadow-paper)]",
               tabGridClass,
             )}
             aria-label="Secciones principales"
@@ -422,10 +422,10 @@ export default function App() {
                 }}
                 aria-current={mainTab === tab.id ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[10px] font-bold transition sm:flex-row sm:gap-1.5 sm:text-sm",
+                  "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[10px] font-bold transition-all duration-200 sm:flex-row sm:gap-1.5 sm:text-sm",
                   mainTab === tab.id
-                    ? "bg-[var(--ink)] text-[var(--paper)] shadow-sm"
-                    : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)]",
+                    ? "bg-gradient-to-r from-[var(--ink)] via-[var(--ink)] to-[var(--accent-strong)] text-[var(--paper)] shadow-[0_10px_20px_rgba(31,41,55,0.18)]"
+                    : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
                 )}
               >
                 <tab.icon className="h-4 w-4 shrink-0" />
@@ -489,7 +489,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => handleAddSubject("Mi primera materia")}
-                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-[var(--ink)] px-5 text-sm font-semibold text-[var(--paper)]"
+                  className="mt-5 inline-flex min-h-11 items-center rounded-xl bg-gradient-to-r from-[var(--ink)] to-[var(--accent-strong)] px-5 text-sm font-semibold text-[var(--paper)] shadow-[0_12px_24px_rgba(79,95,224,0.22)]"
                 >
                   Crear mi primera materia
                 </button>
@@ -531,7 +531,7 @@ export default function App() {
         </section>
       </main>
 
-      <footer className="mx-auto max-w-7xl px-4 pb-8 pt-2 text-center text-[11px] text-[var(--ink-faint)]">
+      <footer className="app-footer mx-auto max-w-7xl px-4 pb-8 pt-2 text-center text-[11px] text-[var(--ink-faint)]">
         <p>
           Hecho con cariño para estudiantes universitarios ·{" "}
           {user ? "Tus notas se guardan en tu cuenta." : "Tus notas se guardan en este dispositivo."}
@@ -540,14 +540,14 @@ export default function App() {
           <button
             type="button"
             onClick={() => setHasEntered(false)}
-            className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+            className="rounded-full px-2.5 py-1.5 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
           >
             Ver la introducción otra vez
           </button>
           <button
             type="button"
             onClick={() => setIsBackupModalOpen(true)}
-            className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+            className="rounded-full px-2.5 py-1.5 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
           >
             Respaldar datos
           </button>
@@ -555,7 +555,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setIsAccountOpen(true)}
-              className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+              className="rounded-full px-2.5 py-1.5 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
             >
               Mi cuenta
             </button>
@@ -563,7 +563,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsPrivacyOpen(true)}
-            className="rounded px-2 py-1 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
+            className="rounded-full px-2.5 py-1.5 font-semibold underline decoration-dotted underline-offset-2 transition hover:text-[var(--ink-soft)]"
           >
             Privacidad
           </button>
